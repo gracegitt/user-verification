@@ -1,4 +1,6 @@
-
+<?php 
+session_start();
+require_once 'controllers/authController.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,18 +18,33 @@
  <div class="container">
      <div class="row">
          <div class="col-md-4 offset-md-4 form-div login">
-        <div class="alert alert-success"> You are logged in</div>
+        <?php if(isset($_SESSION['message'])): ?>
+            <div class="alert <?php echo $_SESSION['alert-class']; ?>"> 
+        <?php echo $_SESSION['message']; 
+        unset($_SESSION['message']);
+        unset($_SESSION['alert-class']);
+        ?>
+    </div>
+    <?php endif; ?>
 
          <h3>Welcome, Grace</h3>
 
          <a href="#" class="logout">logout</a>
+
+        <?php if(!$_SESSION['verified']): ?>
          <div class="alert alert-warning">
              You need to verify your account
-             Sign in to your email account and click on the verification we just emailed you at <strong>gracienjerimuriu@gmail.com</strong>
+             Sign in to your email account and click on the verification we just emailed you at
+              <strong>value="<?php echo $_SESSION['username']; ?>"</strong>
              </div>
+        <?php endif; ?>
+        <?php if(!$_SESSION['verified']): ?>
              <button class="btn btn-block btn-lg btn-primary">I am Verified!</button>
+             <?php endif; ?>
                      </div>
+
      </div>
  </div>
+
 </body>
 </html>

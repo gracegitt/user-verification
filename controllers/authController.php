@@ -6,8 +6,9 @@ $errors = array();
 $username = "";
 $email = "";
 
+
 //if user clicks on the sign up button
-  if(isset($_POST['signup-btn'])){
+  if(isset($_POST['signup-btn'])) {
       $username = $_POST['username'];
       $email = $_POST['email'];
       $password = $_POST['password'];
@@ -28,7 +29,7 @@ $email = "";
       if (empty($password)){
         $errors['password'] = "Password required";
     }
-      if ($password !== $passwordConf);
+      if ($password !== $passwordConf){
         $errors['password'] = "The two passwords do not match";
     }
 
@@ -42,5 +43,32 @@ $email = "";
     if ($userCount > 0){
         $errors['email'] = "Email already exists";
     }
+    if (count($errors)  == 0) {
+      $password = password_hash($password, PASSWORD_DEFAULT);
+      $token = bin2hex(random_bytes(50));
+      $verified = 0;
+     
+      $sql = "INSERT INTO users (username, email, verified, token, password) VALUES(?,?,?,?,?)";
+      $stmt = $conn->prepare($sql);
+      $stmt->bind_param('ssbss', $username, $email,$verified, $token, $password);
+  
+    if ($stmt->execute()) {
+    //loginuser
+    $user_id = $conn->insert_id;
+    session_start();
+
+    $_SESSION['id'] = $user_id;
+    $_SESSION['username'] = $username;
+    $_SESSION['email'] = $email;
+    $_SESSION['verified'] = $verified;
+    //set flash message
+    $_SESSION['message'] = "You are now logged in!";
+    $_SESSION['alert-class'] = "alert-success";
+    header('location: index.php');
+    exit();
+  } else{
+    $errors['db_error'] = "Database error: failed to register";
+  } 
+}
 }
   
